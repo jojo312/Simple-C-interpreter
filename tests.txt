@@ -1,0 +1,186 @@
+Micah Holden
+Assignment 3
+10/6/11
+
+
+Type program; OK to do it on multiple lines; terminate with  !
+  as the first symbol on a line by itself:
+
+print nil;
+print new {int x=9;}
+!
+Parse tree:
+[[], [['print', 'nil'], ['print', ['new', ['struct', [['int', 'x', '9']]]]]]]
+Execution:
+nil
+h1
+activation stack = ['h0']
+heap = {
+  h0 : {'parentns': 'nil'}
+  h1 : {'parentns': 'h0', 'x': 9}
+}
+Press Enter key to terminate
+
+
+Type program; OK to do it on multiple lines; terminate with  !
+  as the first symbol on a line by itself:
+
+int y=9;
+print new {int val=y; proc inc(x):val=(val+x); end;}
+!
+Parse tree:
+[[['int', 'y', '9']], [['print', ['new', ['struct', [['int', 'val', ['deref', 'y']], ['proc', 'inc', ['x'], [['=', 'val', ['+', ['deref', 'val'], ['deref', 'x']]]]]]]]]]]
+Execution:
+h1
+activation stack = ['h0']
+heap = {
+  h0 : {'y': 9, 'parentns': 'nil'}
+  h1 : {'parentns': 'h0', 'val': 9, 'inc': 'h2'}
+  h2 : ['proc', ['x'], [['=', 'val', ['+', ['deref', 'val'], ['deref', 'x']]]], 'h1']
+}
+Press Enter key to terminate
+
+
+Type program; OK to do it on multiple lines; terminate with  !
+  as the first symbol on a line by itself:
+
+ob x=nil;
+ob counter = new{int val=0;
+proc inc(x): val = (val+x); end;};
+print counter;
+x=counter
+!
+Parse tree:
+[[['ob', 'x', 'nil'], ['ob', 'counter', ['new', ['struct', [['int', 'val', '0'], ['proc', 'inc', ['x'], [['=', 'val', ['+', ['deref', 'val'], ['deref', 'x']]]]]]]]]], [['print', ['deref', 'counter']], ['=', 'x', ['deref', 'counter']]]]
+Execution:
+h1
+activation stack = ['h0']
+heap = {
+  h0 : {'parentns': 'nil', 'counter': 'h1', 'x': 'h1'}
+  h1 : {'parentns': 'h0', 'val': 0, 'inc': 'h2'}
+  h2 : ['proc', ['x'], [['=', 'val', ['+', ['deref', 'val'], ['deref', 'x']]]], 'h1']
+}
+Press Enter key to terminate
+
+
+Type program; OK to do it on multiple lines; terminate with  !
+  as the first symbol on a line by itself:
+
+int a=2;
+ob counter = new{int val=a;
+	proc inc(x):val=(val+x); end;};
+counter.inc(1);
+print counter.val;
+!
+Parse tree:
+[[['int', 'a', '2'], ['ob', 'counter', ['new', ['struct', [['int', 'val', ['deref', 'a']], ['proc', 'inc', ['x'], [['=', 'val', ['+', ['deref', 'val'], ['deref', 'x']]]]]]]]]], [['call', ['dot', 'counter', 'inc'], ['1']], ['print', ['deref', ['dot', 'counter', 'val']]]]]
+Execution:
+3
+activation stack = ['h0']
+heap = {
+  h0 : {'a': 2, 'parentns': 'nil', 'counter': 'h1'}
+  h1 : {'parentns': 'h0', 'val': 3, 'inc': 'h2'}
+  h2 : ['proc', ['x'], [['=', 'val', ['+', ['deref', 'val'], ['deref', 'x']]]], 'h1']
+  h3 : {'parentns': 'h1', 'x': 1}
+}
+Press Enter key to terminate
+
+
+Type program; OK to do it on multiple lines; terminate with  !
+  as the first symbol on a line by itself:
+
+ob a = new {
+	int x=5;
+	ob y = new {int z=6;};
+	int z=99;
+        proc p(z): x = (z+y.z) end;
+	};
+a.p(a.y.z);
+print a.x
+!
+Parse tree:
+[[['ob', 'a', ['new', ['struct', [['int', 'x', '5'], ['ob', 'y', ['new', ['struct', [['int', 'z', '6']]]]], ['int', 'z', '99'], ['proc', 'p', ['z'], [['=', 'x', ['+', ['deref', 'z'], ['deref', ['dot', 'y', 'z']]]]]]]]]]], [['call', ['dot', 'a', 'p'], [['deref', ['dot', ['dot', 'a', 'y'], 'z']]]], ['print', ['deref', ['dot', 'a', 'x']]]]]
+Execution:
+12
+activation stack = ['h0']
+heap = {
+  h0 : {'a': 'h1', 'parentns': 'nil'}
+  h1 : {'y': 'h2', 'parentns': 'h0', 'z': 99, 'p': 'h3', 'x': 12}
+  h2 : {'parentns': 'h1', 'z': 6}
+  h3 : ['proc', ['z'], [['=', 'x', ['+', ['deref', 'z'], ['deref', ['dot', 'y', 'z']]]]], 'h1']
+  h4 : {'parentns': 'h1', 'z': 6}
+}
+Press Enter key to terminate
+
+
+Type program; OK to do it on multiple lines; terminate with  !
+  as the first symbol on a line by itself:
+
+class counter:{
+	int val=0;
+	proc inc(): val=(val+1); end;};
+ob c = new counter;
+ob d = new counter;
+c.inc();
+!
+Parse tree:
+[[['class', 'counter', ['struct', [['int', 'val', '0'], ['proc', 'inc', [], [['=', 'val', ['+', ['deref', 'val'], '1']]]]]]], ['ob', 'c', ['new', ['call', 'counter']]], ['ob', 'd', ['new', ['call', 'counter']]]], [['call', ['dot', 'c', 'inc'], []]]]
+Execution:
+activation stack = ['h0']
+heap = {
+  h0 : {'parentns': 'nil', 'c': 'h2', 'counter': 'h1', 'd': 'h4'}
+  h1 : ['class', ['struct', [['int', 'val', '0'], ['proc', 'inc', [], [['=', 'val', ['+', ['deref', 'val'], '1']]]]]], 'h0']
+  h2 : {'parentns': 'h0', 'val': 1, 'inc': 'h3'}
+  h3 : ['proc', [], [['=', 'val', ['+', ['deref', 'val'], '1']]], 'h2']
+  h4 : {'parentns': 'h0', 'val': 0, 'inc': 'h5'}
+  h5 : ['proc', [], [['=', 'val', ['+', ['deref', 'val'], '1']]], 'h4']
+  h6 : {'parentns': 'h2'}
+}
+Press Enter key to terminate
+
+
+Type program; OK to do it on multiple lines; terminate with  !
+  as the first symbol on a line by itself:
+
+class counter:{
+	int val=0;
+	proc inc(): val=(val+1); end;
+	};
+class clock:{
+	ob hours = new counter;
+	ob minutes = new counter;
+	proc tick():
+		if(minutes.val-59):
+			minutes.inc();
+		else
+			minutes.val=0;
+			hours.inc();
+		end;
+	end;};
+ob c = new clock;
+c.tick(); c.tick();
+print c.hours.val;
+print c.minutes.val
+!
+Parse tree:
+[[['class', 'counter', ['struct', [['int', 'val', '0'], ['proc', 'inc', [], [['=', 'val', ['+', ['deref', 'val'], '1']]]]]]], ['class', 'clock', ['struct', [['ob', 'hours', ['new', ['call', 'counter']]], ['ob', 'minutes', ['new', ['call', 'counter']]], ['proc', 'tick', [], [['if', ['-', ['deref', ['dot', 'minutes', 'val']], '59'], [['call', ['dot', 'minutes', 'inc'], []]], [['=', ['dot', 'minutes', 'val'], '0'], ['call', ['dot', 'hours', 'inc'], []]]]]]]]], ['ob', 'c', ['new', ['call', 'clock']]]], [['call', ['dot', 'c', 'tick'], []], ['call', ['dot', 'c', 'tick'], []], ['print', ['deref', ['dot', ['dot', 'c', 'hours'], 'val']]], ['print', ['deref', ['dot', ['dot', 'c', 'minutes'], 'val']]]]]
+Execution:
+0
+2
+activation stack = ['h0']
+heap = {
+  h0 : {'parentns': 'nil', 'c': 'h3', 'counter': 'h1', 'clock': 'h2'}
+  h1 : ['class', ['struct', [['int', 'val', '0'], ['proc', 'inc', [], [['=', 'val', ['+', ['deref', 'val'], '1']]]]]], 'h0']
+  h10 : {'parentns': 'h6'}
+  h11 : {'parentns': 'h3'}
+  h12 : {'parentns': 'h6'}
+  h2 : ['class', ['struct', [['ob', 'hours', ['new', ['call', 'counter']]], ['ob', 'minutes', ['new', ['call', 'counter']]], ['proc', 'tick', [], [['if', ['-', ['deref', ['dot', 'minutes', 'val']], '59'], [['call', ['dot', 'minutes', 'inc'], []]], [['=', ['dot', 'minutes', 'val'], '0'], ['call', ['dot', 'hours', 'inc'], []]]]]]]], 'h0']
+  h3 : {'hours': 'h4', 'parentns': 'h0', 'tick': 'h8', 'minutes': 'h6'}
+  h4 : {'parentns': 'h3', 'val': 0, 'inc': 'h5'}
+  h5 : ['proc', [], [['=', 'val', ['+', ['deref', 'val'], '1']]], 'h4']
+  h6 : {'parentns': 'h3', 'val': 2, 'inc': 'h7'}
+  h7 : ['proc', [], [['=', 'val', ['+', ['deref', 'val'], '1']]], 'h6']
+  h8 : ['proc', [], [['if', ['-', ['deref', ['dot', 'minutes', 'val']], '59'], [['call', ['dot', 'minutes', 'inc'], []]], [['=', ['dot', 'minutes', 'val'], '0'], ['call', ['dot', 'hours', 'inc'], []]]]], 'h3']
+  h9 : {'parentns': 'h3'}
+}
+Press Enter key to terminate

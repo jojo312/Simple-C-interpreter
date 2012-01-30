@@ -1,0 +1,1160 @@
+Created by PLY version 3.4 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    NEWLINE
+    while
+
+Grammar
+
+Rule 0     S' -> Program
+Rule 1     Program -> DeclarationList CommandList
+Rule 2     DeclarationList -> Declaration ; DeclarationList
+Rule 3     DeclarationList -> empty
+Rule 4     Declaration -> int ID = Expression
+Rule 5     Declaration -> ob ID = Expression
+Rule 6     Declaration -> proc ID ( IdentifierList ) : CommandList end
+Rule 7     Declaration -> class ID : TypeTemplate
+Rule 8     TypeTemplate -> extend LefthandSide with { DeclarationList }
+Rule 9     TypeTemplate -> { DeclarationList }
+Rule 10    TypeTemplate -> LefthandSide
+Rule 11    CommandList -> Command
+Rule 12    CommandList -> Command ; CommandList
+Rule 13    CommandList -> empty
+Rule 14    Command -> LefthandSide = Expression
+Rule 15    Command -> if Expression : CommandList else CommandList end
+Rule 16    Command -> print Expression
+Rule 17    Command -> LefthandSide ( ExpressionList )
+Rule 18    ExpressionList -> Expression EListTail
+Rule 19    ExpressionList -> empty
+Rule 20    EListTail -> , Expression EListTail
+Rule 21    EListTail -> empty
+Rule 22    IdentifierList -> ID IListTail
+Rule 23    IdentifierList -> empty
+Rule 24    IListTail -> , ID IListTail
+Rule 25    IListTail -> empty
+Rule 26    Expression -> NUM
+Rule 27    Expression -> ( Expression Op Expression )
+Rule 28    Expression -> LefthandSide
+Rule 29    Expression -> new TypeTemplate
+Rule 30    Expression -> nil
+Rule 31    Op -> +
+Rule 32    Op -> -
+Rule 33    LefthandSide -> ID
+Rule 34    LefthandSide -> LefthandSide . ID
+Rule 35    empty -> <empty>
+
+Terminals, with rules where they appear
+
+(                    : 6 17 27
+)                    : 6 17 27
++                    : 31
+,                    : 20 24
+-                    : 32
+.                    : 34
+:                    : 6 7 15
+;                    : 2 12
+=                    : 4 5 14
+ID                   : 4 5 6 7 22 24 33 34
+NEWLINE              : 
+NUM                  : 26
+class                : 7
+else                 : 15
+end                  : 6 15
+error                : 
+extend               : 8
+if                   : 15
+int                  : 4
+new                  : 29
+nil                  : 30
+ob                   : 5
+print                : 16
+proc                 : 6
+while                : 
+with                 : 8
+{                    : 8 9
+}                    : 8 9
+
+Nonterminals, with rules where they appear
+
+Command              : 11 12
+CommandList          : 1 6 12 15 15
+Declaration          : 2
+DeclarationList      : 1 2 8 9
+EListTail            : 18 20
+Expression           : 4 5 14 15 16 18 20 27 27
+ExpressionList       : 17
+IListTail            : 22 24
+IdentifierList       : 6
+LefthandSide         : 8 10 14 17 28 34
+Op                   : 27
+Program              : 0
+TypeTemplate         : 7 29
+empty                : 3 13 19 21 23 25
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . Program
+    (1) Program -> . DeclarationList CommandList
+    (2) DeclarationList -> . Declaration ; DeclarationList
+    (3) DeclarationList -> . empty
+    (4) Declaration -> . int ID = Expression
+    (5) Declaration -> . ob ID = Expression
+    (6) Declaration -> . proc ID ( IdentifierList ) : CommandList end
+    (7) Declaration -> . class ID : TypeTemplate
+    (35) empty -> .
+
+    int             shift and go to state 2
+    ob              shift and go to state 4
+    proc            shift and go to state 1
+    class           shift and go to state 5
+    if              reduce using rule 35 (empty -> .)
+    print           reduce using rule 35 (empty -> .)
+    ID              reduce using rule 35 (empty -> .)
+    $end            reduce using rule 35 (empty -> .)
+
+    DeclarationList                shift and go to state 3
+    Program                        shift and go to state 6
+    Declaration                    shift and go to state 7
+    empty                          shift and go to state 8
+
+state 1
+
+    (6) Declaration -> proc . ID ( IdentifierList ) : CommandList end
+
+    ID              shift and go to state 9
+
+
+state 2
+
+    (4) Declaration -> int . ID = Expression
+
+    ID              shift and go to state 10
+
+
+state 3
+
+    (1) Program -> DeclarationList . CommandList
+    (11) CommandList -> . Command
+    (12) CommandList -> . Command ; CommandList
+    (13) CommandList -> . empty
+    (14) Command -> . LefthandSide = Expression
+    (15) Command -> . if Expression : CommandList else CommandList end
+    (16) Command -> . print Expression
+    (17) Command -> . LefthandSide ( ExpressionList )
+    (35) empty -> .
+    (33) LefthandSide -> . ID
+    (34) LefthandSide -> . LefthandSide . ID
+
+    if              shift and go to state 17
+    print           shift and go to state 14
+    $end            reduce using rule 35 (empty -> .)
+    ID              shift and go to state 15
+
+    CommandList                    shift and go to state 11
+    LefthandSide                   shift and go to state 12
+    Command                        shift and go to state 13
+    empty                          shift and go to state 16
+
+state 4
+
+    (5) Declaration -> ob . ID = Expression
+
+    ID              shift and go to state 18
+
+
+state 5
+
+    (7) Declaration -> class . ID : TypeTemplate
+
+    ID              shift and go to state 19
+
+
+state 6
+
+    (0) S' -> Program .
+
+
+
+state 7
+
+    (2) DeclarationList -> Declaration . ; DeclarationList
+
+    ;               shift and go to state 20
+
+
+state 8
+
+    (3) DeclarationList -> empty .
+
+    }               reduce using rule 3 (DeclarationList -> empty .)
+    if              reduce using rule 3 (DeclarationList -> empty .)
+    print           reduce using rule 3 (DeclarationList -> empty .)
+    ID              reduce using rule 3 (DeclarationList -> empty .)
+    $end            reduce using rule 3 (DeclarationList -> empty .)
+
+
+state 9
+
+    (6) Declaration -> proc ID . ( IdentifierList ) : CommandList end
+
+    (               shift and go to state 21
+
+
+state 10
+
+    (4) Declaration -> int ID . = Expression
+
+    =               shift and go to state 22
+
+
+state 11
+
+    (1) Program -> DeclarationList CommandList .
+
+    $end            reduce using rule 1 (Program -> DeclarationList CommandList .)
+
+
+state 12
+
+    (14) Command -> LefthandSide . = Expression
+    (17) Command -> LefthandSide . ( ExpressionList )
+    (34) LefthandSide -> LefthandSide . . ID
+
+    =               shift and go to state 23
+    (               shift and go to state 25
+    .               shift and go to state 24
+
+
+state 13
+
+    (11) CommandList -> Command .
+    (12) CommandList -> Command . ; CommandList
+
+    end             reduce using rule 11 (CommandList -> Command .)
+    $end            reduce using rule 11 (CommandList -> Command .)
+    else            reduce using rule 11 (CommandList -> Command .)
+    ;               shift and go to state 26
+
+
+state 14
+
+    (16) Command -> print . Expression
+    (26) Expression -> . NUM
+    (27) Expression -> . ( Expression Op Expression )
+    (28) Expression -> . LefthandSide
+    (29) Expression -> . new TypeTemplate
+    (30) Expression -> . nil
+    (33) LefthandSide -> . ID
+    (34) LefthandSide -> . LefthandSide . ID
+
+    NUM             shift and go to state 30
+    (               shift and go to state 28
+    new             shift and go to state 31
+    nil             shift and go to state 27
+    ID              shift and go to state 15
+
+    LefthandSide                   shift and go to state 29
+    Expression                     shift and go to state 32
+
+state 15
+
+    (33) LefthandSide -> ID .
+
+    .               reduce using rule 33 (LefthandSide -> ID .)
+    ;               reduce using rule 33 (LefthandSide -> ID .)
+    $end            reduce using rule 33 (LefthandSide -> ID .)
+    else            reduce using rule 33 (LefthandSide -> ID .)
+    end             reduce using rule 33 (LefthandSide -> ID .)
+    =               reduce using rule 33 (LefthandSide -> ID .)
+    (               reduce using rule 33 (LefthandSide -> ID .)
+    with            reduce using rule 33 (LefthandSide -> ID .)
+    ,               reduce using rule 33 (LefthandSide -> ID .)
+    )               reduce using rule 33 (LefthandSide -> ID .)
+    :               reduce using rule 33 (LefthandSide -> ID .)
+    +               reduce using rule 33 (LefthandSide -> ID .)
+    -               reduce using rule 33 (LefthandSide -> ID .)
+
+
+state 16
+
+    (13) CommandList -> empty .
+
+    end             reduce using rule 13 (CommandList -> empty .)
+    $end            reduce using rule 13 (CommandList -> empty .)
+    else            reduce using rule 13 (CommandList -> empty .)
+
+
+state 17
+
+    (15) Command -> if . Expression : CommandList else CommandList end
+    (26) Expression -> . NUM
+    (27) Expression -> . ( Expression Op Expression )
+    (28) Expression -> . LefthandSide
+    (29) Expression -> . new TypeTemplate
+    (30) Expression -> . nil
+    (33) LefthandSide -> . ID
+    (34) LefthandSide -> . LefthandSide . ID
+
+    NUM             shift and go to state 30
+    (               shift and go to state 28
+    new             shift and go to state 31
+    nil             shift and go to state 27
+    ID              shift and go to state 15
+
+    Expression                     shift and go to state 33
+    LefthandSide                   shift and go to state 29
+
+state 18
+
+    (5) Declaration -> ob ID . = Expression
+
+    =               shift and go to state 34
+
+
+state 19
+
+    (7) Declaration -> class ID . : TypeTemplate
+
+    :               shift and go to state 35
+
+
+state 20
+
+    (2) DeclarationList -> Declaration ; . DeclarationList
+    (2) DeclarationList -> . Declaration ; DeclarationList
+    (3) DeclarationList -> . empty
+    (4) Declaration -> . int ID = Expression
+    (5) Declaration -> . ob ID = Expression
+    (6) Declaration -> . proc ID ( IdentifierList ) : CommandList end
+    (7) Declaration -> . class ID : TypeTemplate
+    (35) empty -> .
+
+    int             shift and go to state 2
+    ob              shift and go to state 4
+    proc            shift and go to state 1
+    class           shift and go to state 5
+    if              reduce using rule 35 (empty -> .)
+    print           reduce using rule 35 (empty -> .)
+    ID              reduce using rule 35 (empty -> .)
+    $end            reduce using rule 35 (empty -> .)
+    }               reduce using rule 35 (empty -> .)
+
+    Declaration                    shift and go to state 7
+    DeclarationList                shift and go to state 36
+    empty                          shift and go to state 8
+
+state 21
+
+    (6) Declaration -> proc ID ( . IdentifierList ) : CommandList end
+    (22) IdentifierList -> . ID IListTail
+    (23) IdentifierList -> . empty
+    (35) empty -> .
+
+    ID              shift and go to state 38
+    )               reduce using rule 35 (empty -> .)
+
+    empty                          shift and go to state 39
+    IdentifierList                 shift and go to state 37
+
+state 22
+
+    (4) Declaration -> int ID = . Expression
+    (26) Expression -> . NUM
+    (27) Expression -> . ( Expression Op Expression )
+    (28) Expression -> . LefthandSide
+    (29) Expression -> . new TypeTemplate
+    (30) Expression -> . nil
+    (33) LefthandSide -> . ID
+    (34) LefthandSide -> . LefthandSide . ID
+
+    NUM             shift and go to state 30
+    (               shift and go to state 28
+    new             shift and go to state 31
+    nil             shift and go to state 27
+    ID              shift and go to state 15
+
+    LefthandSide                   shift and go to state 29
+    Expression                     shift and go to state 40
+
+state 23
+
+    (14) Command -> LefthandSide = . Expression
+    (26) Expression -> . NUM
+    (27) Expression -> . ( Expression Op Expression )
+    (28) Expression -> . LefthandSide
+    (29) Expression -> . new TypeTemplate
+    (30) Expression -> . nil
+    (33) LefthandSide -> . ID
+    (34) LefthandSide -> . LefthandSide . ID
+
+    NUM             shift and go to state 30
+    (               shift and go to state 28
+    new             shift and go to state 31
+    nil             shift and go to state 27
+    ID              shift and go to state 15
+
+    LefthandSide                   shift and go to state 29
+    Expression                     shift and go to state 41
+
+state 24
+
+    (34) LefthandSide -> LefthandSide . . ID
+
+    ID              shift and go to state 42
+
+
+state 25
+
+    (17) Command -> LefthandSide ( . ExpressionList )
+    (18) ExpressionList -> . Expression EListTail
+    (19) ExpressionList -> . empty
+    (26) Expression -> . NUM
+    (27) Expression -> . ( Expression Op Expression )
+    (28) Expression -> . LefthandSide
+    (29) Expression -> . new TypeTemplate
+    (30) Expression -> . nil
+    (35) empty -> .
+    (33) LefthandSide -> . ID
+    (34) LefthandSide -> . LefthandSide . ID
+
+    NUM             shift and go to state 30
+    (               shift and go to state 28
+    new             shift and go to state 31
+    nil             shift and go to state 27
+    )               reduce using rule 35 (empty -> .)
+    ID              shift and go to state 15
+
+    LefthandSide                   shift and go to state 29
+    ExpressionList                 shift and go to state 43
+    Expression                     shift and go to state 44
+    empty                          shift and go to state 45
+
+state 26
+
+    (12) CommandList -> Command ; . CommandList
+    (11) CommandList -> . Command
+    (12) CommandList -> . Command ; CommandList
+    (13) CommandList -> . empty
+    (14) Command -> . LefthandSide = Expression
+    (15) Command -> . if Expression : CommandList else CommandList end
+    (16) Command -> . print Expression
+    (17) Command -> . LefthandSide ( ExpressionList )
+    (35) empty -> .
+    (33) LefthandSide -> . ID
+    (34) LefthandSide -> . LefthandSide . ID
+
+    if              shift and go to state 17
+    print           shift and go to state 14
+    $end            reduce using rule 35 (empty -> .)
+    else            reduce using rule 35 (empty -> .)
+    end             reduce using rule 35 (empty -> .)
+    ID              shift and go to state 15
+
+    CommandList                    shift and go to state 46
+    LefthandSide                   shift and go to state 12
+    Command                        shift and go to state 13
+    empty                          shift and go to state 16
+
+state 27
+
+    (30) Expression -> nil .
+
+    ;               reduce using rule 30 (Expression -> nil .)
+    $end            reduce using rule 30 (Expression -> nil .)
+    else            reduce using rule 30 (Expression -> nil .)
+    end             reduce using rule 30 (Expression -> nil .)
+    ,               reduce using rule 30 (Expression -> nil .)
+    )               reduce using rule 30 (Expression -> nil .)
+    +               reduce using rule 30 (Expression -> nil .)
+    -               reduce using rule 30 (Expression -> nil .)
+    :               reduce using rule 30 (Expression -> nil .)
+
+
+state 28
+
+    (27) Expression -> ( . Expression Op Expression )
+    (26) Expression -> . NUM
+    (27) Expression -> . ( Expression Op Expression )
+    (28) Expression -> . LefthandSide
+    (29) Expression -> . new TypeTemplate
+    (30) Expression -> . nil
+    (33) LefthandSide -> . ID
+    (34) LefthandSide -> . LefthandSide . ID
+
+    NUM             shift and go to state 30
+    (               shift and go to state 28
+    new             shift and go to state 31
+    nil             shift and go to state 27
+    ID              shift and go to state 15
+
+    LefthandSide                   shift and go to state 29
+    Expression                     shift and go to state 47
+
+state 29
+
+    (28) Expression -> LefthandSide .
+    (34) LefthandSide -> LefthandSide . . ID
+
+    ;               reduce using rule 28 (Expression -> LefthandSide .)
+    $end            reduce using rule 28 (Expression -> LefthandSide .)
+    else            reduce using rule 28 (Expression -> LefthandSide .)
+    end             reduce using rule 28 (Expression -> LefthandSide .)
+    ,               reduce using rule 28 (Expression -> LefthandSide .)
+    )               reduce using rule 28 (Expression -> LefthandSide .)
+    +               reduce using rule 28 (Expression -> LefthandSide .)
+    -               reduce using rule 28 (Expression -> LefthandSide .)
+    :               reduce using rule 28 (Expression -> LefthandSide .)
+    .               shift and go to state 24
+
+
+state 30
+
+    (26) Expression -> NUM .
+
+    ;               reduce using rule 26 (Expression -> NUM .)
+    $end            reduce using rule 26 (Expression -> NUM .)
+    else            reduce using rule 26 (Expression -> NUM .)
+    end             reduce using rule 26 (Expression -> NUM .)
+    ,               reduce using rule 26 (Expression -> NUM .)
+    )               reduce using rule 26 (Expression -> NUM .)
+    +               reduce using rule 26 (Expression -> NUM .)
+    -               reduce using rule 26 (Expression -> NUM .)
+    :               reduce using rule 26 (Expression -> NUM .)
+
+
+state 31
+
+    (29) Expression -> new . TypeTemplate
+    (8) TypeTemplate -> . extend LefthandSide with { DeclarationList }
+    (9) TypeTemplate -> . { DeclarationList }
+    (10) TypeTemplate -> . LefthandSide
+    (33) LefthandSide -> . ID
+    (34) LefthandSide -> . LefthandSide . ID
+
+    extend          shift and go to state 48
+    {               shift and go to state 51
+    ID              shift and go to state 15
+
+    LefthandSide                   shift and go to state 49
+    TypeTemplate                   shift and go to state 50
+
+state 32
+
+    (16) Command -> print Expression .
+
+    ;               reduce using rule 16 (Command -> print Expression .)
+    $end            reduce using rule 16 (Command -> print Expression .)
+    else            reduce using rule 16 (Command -> print Expression .)
+    end             reduce using rule 16 (Command -> print Expression .)
+
+
+state 33
+
+    (15) Command -> if Expression . : CommandList else CommandList end
+
+    :               shift and go to state 52
+
+
+state 34
+
+    (5) Declaration -> ob ID = . Expression
+    (26) Expression -> . NUM
+    (27) Expression -> . ( Expression Op Expression )
+    (28) Expression -> . LefthandSide
+    (29) Expression -> . new TypeTemplate
+    (30) Expression -> . nil
+    (33) LefthandSide -> . ID
+    (34) LefthandSide -> . LefthandSide . ID
+
+    NUM             shift and go to state 30
+    (               shift and go to state 28
+    new             shift and go to state 31
+    nil             shift and go to state 27
+    ID              shift and go to state 15
+
+    LefthandSide                   shift and go to state 29
+    Expression                     shift and go to state 53
+
+state 35
+
+    (7) Declaration -> class ID : . TypeTemplate
+    (8) TypeTemplate -> . extend LefthandSide with { DeclarationList }
+    (9) TypeTemplate -> . { DeclarationList }
+    (10) TypeTemplate -> . LefthandSide
+    (33) LefthandSide -> . ID
+    (34) LefthandSide -> . LefthandSide . ID
+
+    extend          shift and go to state 48
+    {               shift and go to state 51
+    ID              shift and go to state 15
+
+    LefthandSide                   shift and go to state 49
+    TypeTemplate                   shift and go to state 54
+
+state 36
+
+    (2) DeclarationList -> Declaration ; DeclarationList .
+
+    }               reduce using rule 2 (DeclarationList -> Declaration ; DeclarationList .)
+    if              reduce using rule 2 (DeclarationList -> Declaration ; DeclarationList .)
+    print           reduce using rule 2 (DeclarationList -> Declaration ; DeclarationList .)
+    ID              reduce using rule 2 (DeclarationList -> Declaration ; DeclarationList .)
+    $end            reduce using rule 2 (DeclarationList -> Declaration ; DeclarationList .)
+
+
+state 37
+
+    (6) Declaration -> proc ID ( IdentifierList . ) : CommandList end
+
+    )               shift and go to state 55
+
+
+state 38
+
+    (22) IdentifierList -> ID . IListTail
+    (24) IListTail -> . , ID IListTail
+    (25) IListTail -> . empty
+    (35) empty -> .
+
+    ,               shift and go to state 58
+    )               reduce using rule 35 (empty -> .)
+
+    IListTail                      shift and go to state 56
+    empty                          shift and go to state 57
+
+state 39
+
+    (23) IdentifierList -> empty .
+
+    )               reduce using rule 23 (IdentifierList -> empty .)
+
+
+state 40
+
+    (4) Declaration -> int ID = Expression .
+
+    ;               reduce using rule 4 (Declaration -> int ID = Expression .)
+
+
+state 41
+
+    (14) Command -> LefthandSide = Expression .
+
+    ;               reduce using rule 14 (Command -> LefthandSide = Expression .)
+    $end            reduce using rule 14 (Command -> LefthandSide = Expression .)
+    else            reduce using rule 14 (Command -> LefthandSide = Expression .)
+    end             reduce using rule 14 (Command -> LefthandSide = Expression .)
+
+
+state 42
+
+    (34) LefthandSide -> LefthandSide . ID .
+
+    .               reduce using rule 34 (LefthandSide -> LefthandSide . ID .)
+    ;               reduce using rule 34 (LefthandSide -> LefthandSide . ID .)
+    $end            reduce using rule 34 (LefthandSide -> LefthandSide . ID .)
+    else            reduce using rule 34 (LefthandSide -> LefthandSide . ID .)
+    end             reduce using rule 34 (LefthandSide -> LefthandSide . ID .)
+    =               reduce using rule 34 (LefthandSide -> LefthandSide . ID .)
+    (               reduce using rule 34 (LefthandSide -> LefthandSide . ID .)
+    with            reduce using rule 34 (LefthandSide -> LefthandSide . ID .)
+    ,               reduce using rule 34 (LefthandSide -> LefthandSide . ID .)
+    )               reduce using rule 34 (LefthandSide -> LefthandSide . ID .)
+    :               reduce using rule 34 (LefthandSide -> LefthandSide . ID .)
+    +               reduce using rule 34 (LefthandSide -> LefthandSide . ID .)
+    -               reduce using rule 34 (LefthandSide -> LefthandSide . ID .)
+
+
+state 43
+
+    (17) Command -> LefthandSide ( ExpressionList . )
+
+    )               shift and go to state 59
+
+
+state 44
+
+    (18) ExpressionList -> Expression . EListTail
+    (20) EListTail -> . , Expression EListTail
+    (21) EListTail -> . empty
+    (35) empty -> .
+
+    ,               shift and go to state 61
+    )               reduce using rule 35 (empty -> .)
+
+    empty                          shift and go to state 60
+    EListTail                      shift and go to state 62
+
+state 45
+
+    (19) ExpressionList -> empty .
+
+    )               reduce using rule 19 (ExpressionList -> empty .)
+
+
+state 46
+
+    (12) CommandList -> Command ; CommandList .
+
+    end             reduce using rule 12 (CommandList -> Command ; CommandList .)
+    $end            reduce using rule 12 (CommandList -> Command ; CommandList .)
+    else            reduce using rule 12 (CommandList -> Command ; CommandList .)
+
+
+state 47
+
+    (27) Expression -> ( Expression . Op Expression )
+    (31) Op -> . +
+    (32) Op -> . -
+
+    +               shift and go to state 63
+    -               shift and go to state 64
+
+    Op                             shift and go to state 65
+
+state 48
+
+    (8) TypeTemplate -> extend . LefthandSide with { DeclarationList }
+    (33) LefthandSide -> . ID
+    (34) LefthandSide -> . LefthandSide . ID
+
+    ID              shift and go to state 15
+
+    LefthandSide                   shift and go to state 66
+
+state 49
+
+    (10) TypeTemplate -> LefthandSide .
+    (34) LefthandSide -> LefthandSide . . ID
+
+    ;               reduce using rule 10 (TypeTemplate -> LefthandSide .)
+    $end            reduce using rule 10 (TypeTemplate -> LefthandSide .)
+    else            reduce using rule 10 (TypeTemplate -> LefthandSide .)
+    end             reduce using rule 10 (TypeTemplate -> LefthandSide .)
+    :               reduce using rule 10 (TypeTemplate -> LefthandSide .)
+    ,               reduce using rule 10 (TypeTemplate -> LefthandSide .)
+    )               reduce using rule 10 (TypeTemplate -> LefthandSide .)
+    +               reduce using rule 10 (TypeTemplate -> LefthandSide .)
+    -               reduce using rule 10 (TypeTemplate -> LefthandSide .)
+    .               shift and go to state 24
+
+
+state 50
+
+    (29) Expression -> new TypeTemplate .
+
+    ;               reduce using rule 29 (Expression -> new TypeTemplate .)
+    $end            reduce using rule 29 (Expression -> new TypeTemplate .)
+    else            reduce using rule 29 (Expression -> new TypeTemplate .)
+    end             reduce using rule 29 (Expression -> new TypeTemplate .)
+    ,               reduce using rule 29 (Expression -> new TypeTemplate .)
+    )               reduce using rule 29 (Expression -> new TypeTemplate .)
+    +               reduce using rule 29 (Expression -> new TypeTemplate .)
+    -               reduce using rule 29 (Expression -> new TypeTemplate .)
+    :               reduce using rule 29 (Expression -> new TypeTemplate .)
+
+
+state 51
+
+    (9) TypeTemplate -> { . DeclarationList }
+    (2) DeclarationList -> . Declaration ; DeclarationList
+    (3) DeclarationList -> . empty
+    (4) Declaration -> . int ID = Expression
+    (5) Declaration -> . ob ID = Expression
+    (6) Declaration -> . proc ID ( IdentifierList ) : CommandList end
+    (7) Declaration -> . class ID : TypeTemplate
+    (35) empty -> .
+
+    int             shift and go to state 2
+    ob              shift and go to state 4
+    proc            shift and go to state 1
+    class           shift and go to state 5
+    }               reduce using rule 35 (empty -> .)
+
+    Declaration                    shift and go to state 7
+    DeclarationList                shift and go to state 67
+    empty                          shift and go to state 8
+
+state 52
+
+    (15) Command -> if Expression : . CommandList else CommandList end
+    (11) CommandList -> . Command
+    (12) CommandList -> . Command ; CommandList
+    (13) CommandList -> . empty
+    (14) Command -> . LefthandSide = Expression
+    (15) Command -> . if Expression : CommandList else CommandList end
+    (16) Command -> . print Expression
+    (17) Command -> . LefthandSide ( ExpressionList )
+    (35) empty -> .
+    (33) LefthandSide -> . ID
+    (34) LefthandSide -> . LefthandSide . ID
+
+    if              shift and go to state 17
+    print           shift and go to state 14
+    else            reduce using rule 35 (empty -> .)
+    ID              shift and go to state 15
+
+    CommandList                    shift and go to state 68
+    LefthandSide                   shift and go to state 12
+    Command                        shift and go to state 13
+    empty                          shift and go to state 16
+
+state 53
+
+    (5) Declaration -> ob ID = Expression .
+
+    ;               reduce using rule 5 (Declaration -> ob ID = Expression .)
+
+
+state 54
+
+    (7) Declaration -> class ID : TypeTemplate .
+
+    ;               reduce using rule 7 (Declaration -> class ID : TypeTemplate .)
+
+
+state 55
+
+    (6) Declaration -> proc ID ( IdentifierList ) . : CommandList end
+
+    :               shift and go to state 69
+
+
+state 56
+
+    (22) IdentifierList -> ID IListTail .
+
+    )               reduce using rule 22 (IdentifierList -> ID IListTail .)
+
+
+state 57
+
+    (25) IListTail -> empty .
+
+    )               reduce using rule 25 (IListTail -> empty .)
+
+
+state 58
+
+    (24) IListTail -> , . ID IListTail
+
+    ID              shift and go to state 70
+
+
+state 59
+
+    (17) Command -> LefthandSide ( ExpressionList ) .
+
+    ;               reduce using rule 17 (Command -> LefthandSide ( ExpressionList ) .)
+    $end            reduce using rule 17 (Command -> LefthandSide ( ExpressionList ) .)
+    else            reduce using rule 17 (Command -> LefthandSide ( ExpressionList ) .)
+    end             reduce using rule 17 (Command -> LefthandSide ( ExpressionList ) .)
+
+
+state 60
+
+    (21) EListTail -> empty .
+
+    )               reduce using rule 21 (EListTail -> empty .)
+
+
+state 61
+
+    (20) EListTail -> , . Expression EListTail
+    (26) Expression -> . NUM
+    (27) Expression -> . ( Expression Op Expression )
+    (28) Expression -> . LefthandSide
+    (29) Expression -> . new TypeTemplate
+    (30) Expression -> . nil
+    (33) LefthandSide -> . ID
+    (34) LefthandSide -> . LefthandSide . ID
+
+    NUM             shift and go to state 30
+    (               shift and go to state 28
+    new             shift and go to state 31
+    nil             shift and go to state 27
+    ID              shift and go to state 15
+
+    LefthandSide                   shift and go to state 29
+    Expression                     shift and go to state 71
+
+state 62
+
+    (18) ExpressionList -> Expression EListTail .
+
+    )               reduce using rule 18 (ExpressionList -> Expression EListTail .)
+
+
+state 63
+
+    (31) Op -> + .
+
+    NUM             reduce using rule 31 (Op -> + .)
+    (               reduce using rule 31 (Op -> + .)
+    new             reduce using rule 31 (Op -> + .)
+    nil             reduce using rule 31 (Op -> + .)
+    ID              reduce using rule 31 (Op -> + .)
+
+
+state 64
+
+    (32) Op -> - .
+
+    NUM             reduce using rule 32 (Op -> - .)
+    (               reduce using rule 32 (Op -> - .)
+    new             reduce using rule 32 (Op -> - .)
+    nil             reduce using rule 32 (Op -> - .)
+    ID              reduce using rule 32 (Op -> - .)
+
+
+state 65
+
+    (27) Expression -> ( Expression Op . Expression )
+    (26) Expression -> . NUM
+    (27) Expression -> . ( Expression Op Expression )
+    (28) Expression -> . LefthandSide
+    (29) Expression -> . new TypeTemplate
+    (30) Expression -> . nil
+    (33) LefthandSide -> . ID
+    (34) LefthandSide -> . LefthandSide . ID
+
+    NUM             shift and go to state 30
+    (               shift and go to state 28
+    new             shift and go to state 31
+    nil             shift and go to state 27
+    ID              shift and go to state 15
+
+    LefthandSide                   shift and go to state 29
+    Expression                     shift and go to state 72
+
+state 66
+
+    (8) TypeTemplate -> extend LefthandSide . with { DeclarationList }
+    (34) LefthandSide -> LefthandSide . . ID
+
+    with            shift and go to state 73
+    .               shift and go to state 24
+
+
+state 67
+
+    (9) TypeTemplate -> { DeclarationList . }
+
+    }               shift and go to state 74
+
+
+state 68
+
+    (15) Command -> if Expression : CommandList . else CommandList end
+
+    else            shift and go to state 75
+
+
+state 69
+
+    (6) Declaration -> proc ID ( IdentifierList ) : . CommandList end
+    (11) CommandList -> . Command
+    (12) CommandList -> . Command ; CommandList
+    (13) CommandList -> . empty
+    (14) Command -> . LefthandSide = Expression
+    (15) Command -> . if Expression : CommandList else CommandList end
+    (16) Command -> . print Expression
+    (17) Command -> . LefthandSide ( ExpressionList )
+    (35) empty -> .
+    (33) LefthandSide -> . ID
+    (34) LefthandSide -> . LefthandSide . ID
+
+    if              shift and go to state 17
+    print           shift and go to state 14
+    end             reduce using rule 35 (empty -> .)
+    ID              shift and go to state 15
+
+    CommandList                    shift and go to state 76
+    LefthandSide                   shift and go to state 12
+    Command                        shift and go to state 13
+    empty                          shift and go to state 16
+
+state 70
+
+    (24) IListTail -> , ID . IListTail
+    (24) IListTail -> . , ID IListTail
+    (25) IListTail -> . empty
+    (35) empty -> .
+
+    ,               shift and go to state 58
+    )               reduce using rule 35 (empty -> .)
+
+    IListTail                      shift and go to state 77
+    empty                          shift and go to state 57
+
+state 71
+
+    (20) EListTail -> , Expression . EListTail
+    (20) EListTail -> . , Expression EListTail
+    (21) EListTail -> . empty
+    (35) empty -> .
+
+    ,               shift and go to state 61
+    )               reduce using rule 35 (empty -> .)
+
+    empty                          shift and go to state 60
+    EListTail                      shift and go to state 78
+
+state 72
+
+    (27) Expression -> ( Expression Op Expression . )
+
+    )               shift and go to state 79
+
+
+state 73
+
+    (8) TypeTemplate -> extend LefthandSide with . { DeclarationList }
+
+    {               shift and go to state 80
+
+
+state 74
+
+    (9) TypeTemplate -> { DeclarationList } .
+
+    ;               reduce using rule 9 (TypeTemplate -> { DeclarationList } .)
+    $end            reduce using rule 9 (TypeTemplate -> { DeclarationList } .)
+    else            reduce using rule 9 (TypeTemplate -> { DeclarationList } .)
+    end             reduce using rule 9 (TypeTemplate -> { DeclarationList } .)
+    :               reduce using rule 9 (TypeTemplate -> { DeclarationList } .)
+    ,               reduce using rule 9 (TypeTemplate -> { DeclarationList } .)
+    )               reduce using rule 9 (TypeTemplate -> { DeclarationList } .)
+    +               reduce using rule 9 (TypeTemplate -> { DeclarationList } .)
+    -               reduce using rule 9 (TypeTemplate -> { DeclarationList } .)
+
+
+state 75
+
+    (15) Command -> if Expression : CommandList else . CommandList end
+    (11) CommandList -> . Command
+    (12) CommandList -> . Command ; CommandList
+    (13) CommandList -> . empty
+    (14) Command -> . LefthandSide = Expression
+    (15) Command -> . if Expression : CommandList else CommandList end
+    (16) Command -> . print Expression
+    (17) Command -> . LefthandSide ( ExpressionList )
+    (35) empty -> .
+    (33) LefthandSide -> . ID
+    (34) LefthandSide -> . LefthandSide . ID
+
+    if              shift and go to state 17
+    print           shift and go to state 14
+    end             reduce using rule 35 (empty -> .)
+    ID              shift and go to state 15
+
+    CommandList                    shift and go to state 81
+    LefthandSide                   shift and go to state 12
+    Command                        shift and go to state 13
+    empty                          shift and go to state 16
+
+state 76
+
+    (6) Declaration -> proc ID ( IdentifierList ) : CommandList . end
+
+    end             shift and go to state 82
+
+
+state 77
+
+    (24) IListTail -> , ID IListTail .
+
+    )               reduce using rule 24 (IListTail -> , ID IListTail .)
+
+
+state 78
+
+    (20) EListTail -> , Expression EListTail .
+
+    )               reduce using rule 20 (EListTail -> , Expression EListTail .)
+
+
+state 79
+
+    (27) Expression -> ( Expression Op Expression ) .
+
+    ;               reduce using rule 27 (Expression -> ( Expression Op Expression ) .)
+    $end            reduce using rule 27 (Expression -> ( Expression Op Expression ) .)
+    else            reduce using rule 27 (Expression -> ( Expression Op Expression ) .)
+    end             reduce using rule 27 (Expression -> ( Expression Op Expression ) .)
+    ,               reduce using rule 27 (Expression -> ( Expression Op Expression ) .)
+    )               reduce using rule 27 (Expression -> ( Expression Op Expression ) .)
+    +               reduce using rule 27 (Expression -> ( Expression Op Expression ) .)
+    -               reduce using rule 27 (Expression -> ( Expression Op Expression ) .)
+    :               reduce using rule 27 (Expression -> ( Expression Op Expression ) .)
+
+
+state 80
+
+    (8) TypeTemplate -> extend LefthandSide with { . DeclarationList }
+    (2) DeclarationList -> . Declaration ; DeclarationList
+    (3) DeclarationList -> . empty
+    (4) Declaration -> . int ID = Expression
+    (5) Declaration -> . ob ID = Expression
+    (6) Declaration -> . proc ID ( IdentifierList ) : CommandList end
+    (7) Declaration -> . class ID : TypeTemplate
+    (35) empty -> .
+
+    int             shift and go to state 2
+    ob              shift and go to state 4
+    proc            shift and go to state 1
+    class           shift and go to state 5
+    }               reduce using rule 35 (empty -> .)
+
+    Declaration                    shift and go to state 7
+    DeclarationList                shift and go to state 83
+    empty                          shift and go to state 8
+
+state 81
+
+    (15) Command -> if Expression : CommandList else CommandList . end
+
+    end             shift and go to state 84
+
+
+state 82
+
+    (6) Declaration -> proc ID ( IdentifierList ) : CommandList end .
+
+    ;               reduce using rule 6 (Declaration -> proc ID ( IdentifierList ) : CommandList end .)
+
+
+state 83
+
+    (8) TypeTemplate -> extend LefthandSide with { DeclarationList . }
+
+    }               shift and go to state 85
+
+
+state 84
+
+    (15) Command -> if Expression : CommandList else CommandList end .
+
+    ;               reduce using rule 15 (Command -> if Expression : CommandList else CommandList end .)
+    $end            reduce using rule 15 (Command -> if Expression : CommandList else CommandList end .)
+    else            reduce using rule 15 (Command -> if Expression : CommandList else CommandList end .)
+    end             reduce using rule 15 (Command -> if Expression : CommandList else CommandList end .)
+
+
+state 85
+
+    (8) TypeTemplate -> extend LefthandSide with { DeclarationList } .
+
+    ;               reduce using rule 8 (TypeTemplate -> extend LefthandSide with { DeclarationList } .)
+    $end            reduce using rule 8 (TypeTemplate -> extend LefthandSide with { DeclarationList } .)
+    else            reduce using rule 8 (TypeTemplate -> extend LefthandSide with { DeclarationList } .)
+    end             reduce using rule 8 (TypeTemplate -> extend LefthandSide with { DeclarationList } .)
+    :               reduce using rule 8 (TypeTemplate -> extend LefthandSide with { DeclarationList } .)
+    ,               reduce using rule 8 (TypeTemplate -> extend LefthandSide with { DeclarationList } .)
+    )               reduce using rule 8 (TypeTemplate -> extend LefthandSide with { DeclarationList } .)
+    +               reduce using rule 8 (TypeTemplate -> extend LefthandSide with { DeclarationList } .)
+    -               reduce using rule 8 (TypeTemplate -> extend LefthandSide with { DeclarationList } .)
+

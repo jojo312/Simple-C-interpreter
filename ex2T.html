@@ -1,0 +1,336 @@
+
+<html>
+<body>
+<h2>CIS505 Assignment 2</h2>
+
+<em><font color="#8B0000">10 points; due Thursday, September 22</font></em>
+
+<p>
+We will develop a Java-like object-oriented language in stages.
+This, the first stage, begins with more-or-less the assignment language from Exercise 1,
+<font color="#00008B"><strong><pre>
+P  ::=  CL
+CL ::=  C;*   (zero or more  C  separated by ; )
+C  ::=  L = E  |  if E : CL else CL end  |  print E
+E  ::=  N  |  E1 OP E2  | L
+OP ::=  +  |  -
+L  ::=  I
+N  ::=  a nonempty string of digits
+I  ::=  a nonempty string of letters, not a keyword
+</pre></strong></font>
+but this time implemented by a heap-storage interpreter, like that in Chapter 2, Section 2.2.
+
+<p>
+You will extend this language with
+initialized declared variables and
+parameterized procedures.  (Objects and classes are added later.)
+A sample program in the extended language looks like this:
+<font color="#00008B"><pre>===================================================<strong>
+
+int x = 2;
+proc p(y, z):
+   x = (y - z); q(y); z = 0
+end;
+proc q(y): x = (x + (y - 1)) end;
+p(9, (x+1));
+print x
+
+</strong>===================================================</pre></font>
+Here is the execution of the above program:
+<font color="#00008B"><pre>===================================================<strong>
+
+Parse tree:
+[[['int', 'x', '2'],
+  ['proc', 'p', ['y', 'z'],
+                [['=', 'x', ['-', ['deref', 'y'], ['deref', 'z']]], ['call', 'q', [['deref', 'y']]], ['=', 'z', '0']]],
+  ['proc', 'q', ['y'],
+                [['=', 'x', ['deref', 'y']]]]],
+[['call', 'p', ['9', ['+', ['deref', 'x'], '1']]],
+['print', ['deref', 'x']]]]
+Execution:
+14
+activation stack = ['h0']
+heap = {
+  h0 : {'q': 'h2', 'parentns': 'nil', 'p': 'h1', 'x': 14}
+  h1 : ['proc', ['y', 'z'], [['=', 'x', ['-', ['deref', 'y'], ['deref', 'z']]], ['call', 'q', [['deref', 'y']]], ['=', 'z', '0']], 'h0']
+  h2 : ['proc', ['y'], [['=', 'x', ['+', ['deref', 'x'], ['-', ['deref', 'y'], '1']]]], 'h0']
+  h3 : {'y': 9, 'parentns': 'h0', 'z': 0}
+  h4 : {'y': 9, 'parentns': 'h0'}
+}
+
+</strong>===================================================</pre></font>
+The execution shows that the implementation uses an activation stack
+(implemented as a Python list) of handles to activation namespaces (dictionaries), where a namespace
+holds declared variables and procedures.   Procedures are saved in the
+heap as closure objects (lists).  When a procedure is called,
+a namespace is allocated, the parameter-argument bindings are stored
+in the new namespace, and the namespace's handle is pushed onto the activation stack.
+When the procedure completes, the handle is popped.
+<em><font color="#8B0000">See Section 5.2.1 of the lecture notes for examples and diagrams about
+how this works.</font></em>
+
+
+<p>
+Here's the extended language's grammar:
+<font color="#00008B"><pre>===================================================<strong>
+
+P : Program
+CL : CommandList
+C : Command
+DL : DeclarationList
+D : Declaration
+E : Expression
+I : Variable
+N : Numeral
+
+P  ::=  DL  CL
+
+DL ::=  D;*
+   that is, a sequence of zero or more Ds, separated by  ;
+   ( DL ::=  D  |  D ; DL  |  empty  )
+
+D  ::=  int I = E  |  proc I ( IL ) : CL end 
+
+CL ::=  C;*
+C  ::=  I = E  |  if E : CL1 else CL2 end  |  print E  |  I ( EL )
+
+EL ::=  E,*
+E  ::=  N  |  ( E1 OP E2 )  |  I
+OP ::=  +  |  -
+
+IL ::=  I,*
+I ::=  strings of letters, not including keywords
+
+N ::=  string of digits
+
+</strong>===================================================</pre></font>
+I have used the PLY parser-generator to make a parser that recognizes this language.   
+(See the file, <tt><font color="#00008B"><strong>a234parser.py</strong></font></tt>.)
+
+<h4>Interpreter input format</h4>
+
+<p>
+The input to the interpreter is the list-based parse tree constructed by the parser.
+The syntax of parse trees goes like this:
+<font color="#00008B"><pre>===================================================<strong>
+
+PTREE ::=  [DLIST, CLIST]
+
+DLIST ::=  [ DTREE* ]
+           where  DTREE*  means zero or more DTREEs
+DTREE ::=  ["int", ID, ETREE]  |  ["proc", ID, ILIST, CLIST]
+
+CLIST ::=  [ CTREE* ]
+CTREE ::=  ["=", LTREE, ETREE]  |  ["if", ETREE, CLIST, CLIST]
+        |  ["print", ETREE]  |  ["call", ID, ELIST]
+
+ELIST ::=   [ ETREE* ]
+ETREE ::=  NUM  |  [OP, ETREE, ETREE] |  ["deref", LTREE]  
+      where  OP ::=  "+"  | "-"
+
+LTREE ::=  ID
+
+ILIST ::= [ ID* ]
+ID    ::=  a nonempty string of letters
+
+NUM   ::=  a nonempty string of digits
+
+</strong>===================================================</pre></font>
+
+
+<h4>Interpreter operation</h4>
+
+I have constructed for you an interpreter, <tt><font color="#00008B"><strong>interpret.py</strong></font></tt>, that implements
+the core assignment language.
+When you download
+and run the interpreter on a core program, you will see it behaves like this:
+<font color="#00008B"><pre>===================================================<strong>
+
+Type program; OK to do it on multiple lines; terminate with  !
+  as the first symbol on a line by itself:
+x = 2;
+y = (x + 1);
+print y
+!
+Parse tree:
+[[], [['=', 'x', '2'], ['=', 'y', ['+', ['deref', 'x'], '1']], ['print', ['deref', 'y']]]]
+Execution:
+3
+namespace = h0
+heap = {
+  h0 : {'y': 3, 'x': 2}
+}
+Press Enter key to terminate
+
+</strong>===================================================</pre></font>
+The parse tree has an empty list of declarations (since the
+core language doesn't yet have declarations) and there is no activation
+stack but only a handle to the active namespace that holds the program's variables.
+
+<p>
+Here are the steps you take to do this assignment:  
+<ol>
+<li>
+Go to the CIS505 assignment page and download the folder, <tt><font color="#00008B"><strong>Ex2</strong></font></tt>.
+It contains the scanner (<tt><font color="#00008B"><strong>a234lex</strong></font></tt>), parser (<tt><font color="#00008B"><strong>a234parse</strong></font></tt>), parser-generator library (<tt><font color="#00008B"><strong>ply</strong></font></tt>), heap (<tt><font color="#00008B"><strong>heapmodule</strong></font></tt>),
+starting
+interpreter (<tt><font color="#00008B"><strong>interpret</strong></font></tt>), and drivers (<tt><font color="#00008B"><strong>run</strong></font></tt> and <tt><font color="#00008B"><strong>run0</strong></font></tt>).  Double-click the <tt><font color="#00008B"><strong>run0</strong></font></tt> icon or type <tt><font color="#00008B"><strong>python run.py</strong></font></tt>
+to run the prototype system and test the above example.
+<p>
+<li>
+Within <tt><font color="#00008B"><strong>heapmodule.py</strong></font></tt>,
+replace the active-namespace variable, <tt><font color="#00008B"><strong>ns</strong></font></tt>, by an activation stack, and add functions that push a handle onto the
+activation stack, pop the stack, check if the stack is empty, and return the top handle.
+Modify the <tt><font color="#00008B"><strong>allocateNS</strong></font></tt> function so that it places a <tt><font color="#00008B"><strong>'parentns':'nil'</strong></font></tt> binding in
+every newly allocated namespace.
+Modify <tt><font color="#00008B"><strong>activeNS</strong></font></tt>, <tt><font color="#00008B"><strong>initializeHeap</strong></font></tt>, and <tt><font color="#00008B"><strong>printHeap</strong></font></tt> so that they use the stack
+(and not <tt><font color="#00008B"><strong>ns</strong></font></tt>).
+Test that the system still executes the starter test cases ok.
+<p>
+Now, in <tt><font color="#00008B"><strong>interpret.py</strong></font></tt>, add
+integer declarations to <tt><font color="#00008B"><strong>interpretDTREE</strong></font></tt>: For <tt><font color="#00008B"><strong>int I = E</strong></font></tt>,  do this: bind <tt><font color="#00008B"><strong>I</strong></font></tt> 
+to the value of <tt><font color="#00008B"><strong>E</strong></font></tt> in the <em><font color="#8B0000">active namespace</font></em>
+(the namespace whose handle
+lies at the top of the activation stack).
+Make certain that variable <tt><font color="#00008B"><strong>I</strong></font></tt> is not already declared in the active namespace.
+(If it is already declared, then it's an error that prints a
+message and stops execution.)
+<em><font color="#8B0000">
+It will be simplest if you write a new function, <tt><font color="#00008B"><strong>declare</strong></font></tt>, add
+it to <tt><font color="#00008B"><strong>heapmodule.py</strong></font></tt>, and call it to declare a new variable.
+</font></em>
+
+<p>
+Also, modify the interpreter to enforce that every variable that appears in position <tt><font color="#00008B"><strong>L</strong></font></tt>
+of <tt><font color="#00008B"><strong>L = E</strong></font></tt>
+is already declared.
+(Otherwise, it's an error that prints a
+message and stops execution.)
+<em><font color="#8B0000">
+It will be simplest if you modify the <tt><font color="#00008B"><strong>store</strong></font></tt> function in <tt><font color="#00008B"><strong>heapmodule.py</strong></font></tt>
+to do the check.
+</font></em>
+
+
+<p>
+<li>
+Next, implement procedure declarations in <tt><font color="#00008B"><strong>interpretDTREE</strong></font></tt>:
+For <tt><font color="#00008B"><strong>proc I(IL): CL end</strong></font></tt>, do this: bind <tt><font color="#00008B"><strong>I</strong></font></tt> to the handle of a newly allocated closure (the closure can be implemented as a list, like above, or as a dictionary) that holds
+<tt><font color="#00008B"><strong>IL</strong></font></tt>, <tt><font color="#00008B"><strong>CL</strong></font></tt>, and the handle to the active namespace. (See the CIS505
+notes, Section 5.2.1, for details.)
+Make certain that variable <tt><font color="#00008B"><strong>I</strong></font></tt> is not already declared in the active namespace
+(Otherwise, it's an error that prints a
+message and stops execution).
+<em><font color="#8B0000">It will be simplest if you write a new function, <tt><font color="#00008B"><strong>allocateClosure</strong></font></tt>, add it
+to <tt><font color="#00008B"><strong>heapmodule.py</strong></font></tt>, and call it to allocate the closure.</font></em>
+
+<p>
+<li>
+Now, implement procedure call in <tt><font color="#00008B"><strong>interpretCTREE</strong></font></tt>:
+For <tt><font color="#00008B"><strong>I(EL)</strong></font></tt>, do these steps, as described in the CIS505 notes:
+<em><font color="#8B0000">(i)</font></em> Compute the meaning of <tt><font color="#00008B"><strong>I</strong></font></tt>, verify that the meaning is the handle to a closure,
+and extract from the closure the <tt><font color="#00008B"><strong>IL</strong></font></tt>, <tt><font color="#00008B"><strong>CL</strong></font></tt>, and global handle.
+(If <tt><font color="#00008B"><strong>I</strong></font></tt> is not bound to a handle to a closure, it's an error that stops execution.)
+<em><font color="#8B0000">(ii)</font></em> Allocate a new namespace and push the new namespace's handle onto the
+activation stack.
+<em><font color="#8B0000">(iii)</font></em>
+Within the new namespace,
+bind <tt><font color="#00008B"><strong>parentns</strong></font></tt> to the global handle extracted from the closure;
+evaluate <tt><font color="#00008B"><strong>EL</strong></font></tt> and bind their values to the corresponding
+names in <tt><font color="#00008B"><strong>IL</strong></font></tt>.
+Make certain that the number of arguments in <tt><font color="#00008B"><strong>EL</strong></font></tt> equals the number of parameters in
+<tt><font color="#00008B"><strong>IL</strong></font></tt>.  (Otherwise, it's an error that prints a
+message and stops execution).
+<em><font color="#8B0000">(iv)</font></em> Execute <tt><font color="#00008B"><strong>CL</strong></font></tt>, and upon completion pop the activation stack.
+
+<p>
+Since the intepreter now uses local namespaces for parameters
+and global namespaces for global variables, you must implement
+a two-stage lookup algorithm: within <tt><font color="#00008B"><strong>interpretLTREE</strong></font></tt>,
+when searching for a variable, <tt><font color="#00008B"><strong>V</strong></font></tt>,
+look in the active namespace first; if not there, look for <tt><font color="#00008B"><strong>V</strong></font></tt> in the <tt><font color="#00008B"><strong>parentns</strong></font></tt>
+namespace.  (See the CIS505 lecture notes, Section 2.2.1.)
+</ol>
+
+<p>
+<em><font color="#8B0000">Remember to document appropriately your modified interpreter.
+</font></em>
+
+<h4>Testing</h4>
+
+The <tt><font color="#00008B"><strong>Ex2</strong></font></tt> folder contains a file of test cases that you must use.
+Use at least these tests to check your implementation.
+You might devise additional tests to see if the interpreter detects program
+errors and prints appropriate messages.
+
+<p>
+Place all the test cases and their output in a file named <tt><font color="#00008B"><strong>tests.txt</strong></font></tt>
+
+<h4>Either a one- or two-person project...</h4>
+You may do this exercise solo or with a partner. If you choose the latter, you must tell the instructor (Schmidt) by Friday evening, September 9, who you and your partner are.
+(After the 9th, I won't allow new teams to form.)
+Once the instructor OKs your request, you and your partner can work together on the assignment. (When you submit, both you and your partner will submit one and the same program.) 
+
+<h4>Submission and grading</h4>
+
+Make a folder, <tt><font color="#00008B"><strong>Ex2</strong></font></tt>, and place in it your modified versions of
+<tt><font color="#00008B"><strong>heapmodule.py</strong></font></tt> and <tt><font color="#00008B"><strong>interpret.py</strong></font></tt> and also <tt><font color="#00008B"><strong>tests.txt</strong></font></tt>.
+Zip the folder into a <tt><font color="#00008B"><strong>.zip</strong></font></tt> file and submit the <tt><font color="#00008B"><strong>.zip</strong></font></tt> file to the CIS505 site on K-State Online.
+
+The teaching assistant will study your work and your tests and apply some
+additional tests before scoring the submission.
+
+<h4>Extra credit</h4>
+Real languages let you make local declarations within procedure bodies,
+like this:
+<font color="#00008B"><strong><pre>
+int v = 99;
+proc p(x, y) :
+    int z = 0;
+    proc q(a) : v = ((a + y) + z) end;
+    z = (x + y);
+    q(z)
+end;
+p(3, v)
+</pre></strong></font>
+The syntax for procedures with local variables looks like this:
+<font color="#00008B"><pre>===================================================<strong>
+
+D ::= ...  |  proc I ( IL ) : DL CL end
+
+</strong>===================================================</pre></font>
+and the parse tree has this form:
+<font color="#00008B"><strong><pre>
+["proc", ID, ILIST, DLIST, CLIST]
+</pre></strong></font>
+For extra credit, modify the parser and interpreter to handle procedures
+of this form.  Almost all your work is easy; the interesting part is
+handling variable lookups in <tt><font color="#00008B"><strong>interpretLTREE</strong></font></tt>, which requires a loop that searches the
+<em><font color="#8B0000">static chain</font></em> of <tt><font color="#00008B"><strong>parentns</strong></font></tt> links. 
+(In the above example, consider how the variables <tt><font color="#00008B"><strong>v</strong></font></tt>, <tt><font color="#00008B"><strong>a</strong></font></tt>, <tt><font color="#00008B"><strong>y</strong></font></tt>,
+and <tt><font color="#00008B"><strong>z</strong></font></tt> are found when the body of <tt><font color="#00008B"><strong>q</strong></font></tt> executes --- see the CIS505 lecture
+notes, Section 5.3.1.)
+
+<p>
+If you do this extra work, then place into your <tt><font color="#00008B"><strong>Ex2</strong></font></tt> folder the following
+files:
+<dl>
+<dd>
+the modified file, <tt><font color="#00008B"><strong>a234parse.py</strong></font></tt>
+<dd>
+the modified file, <tt><font color="#00008B"><strong>heapmodule.py</strong></font></tt>
+<dd>
+the modified file, <tt><font color="#00008B"><strong>interpret.py</strong></font></tt>
+<dd>
+<tt><font color="#00008B"><strong>tests.txt</strong></font></tt> (the required tests)
+<dd>
+<tt><font color="#00008B"><strong>extratests.txt</strong></font></tt>  (extra tests you devised that show how your implementation
+handles local declarations within procedure bodies, like the one example
+above)
+</dl>
+
+</body>
+</html>
+
+
+
